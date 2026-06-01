@@ -1,73 +1,110 @@
-# React + TypeScript + Vite
+# 🏫 Akıllı Kampüs Duyuru & Bildirim Portalı
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bu proje, modern yazılım mimarisi prensipleri ve tasarım desenleri (Design Patterns) kullanılarak geliştirilmiş, esnek ve modüler bir **Kampüs Duyuru & Çok Kanallı Bildirim Portalı** uygulamasıdır. Proje; **Clean Architecture** prensiplerine sadık kalınarak katmanlandırılmış, **Vite**, **TypeScript** ve **React Router** teknolojileriyle zenginleştirilmiştir.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Mimari ve Tasarım Desenleri (Design Patterns)
 
-## React Compiler
+Proje, yazılım dünyasında sıkça kullanılan 3 temel tasarım desenini birbirine entegre şekilde uygulayarak **Loosely Coupled (gevşek bağlı)** ve genişletilebilir bir yapı sunar:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. 🟣 Gözlemci Deseni (Observer Pattern)
+*   **Subject (Özne):** `AnnouncementPublisher` sınıfı, `ISubject` arayüzünü uygulayarak gözlemcileri yönetir.
+*   **Observer (Gözlemci):** `IObserver` arayüzünü uygulayan `Student` ve `Teacher` sınıflarıdır.
+*   **Hedef Kitle Filtreleme (Filtered Delivery):** Duyurular yayınlanırken tüm gözlemciler körü körüne uyarılmaz; duyurunun `targetAudience` değeri (`ALL`, `STUDENT`, `TEACHER`) ile gözlemcinin `role` değeri filtreye tabi tutulur. Böylece öğretmen uyarısı sadece öğretmenlere, ödev teslim uyarısı sadece öğrencilere iletilir.
 
-## Expanding the ESLint configuration
+### 2. 🟢 Fabrika Metodu Deseni (Factory Method)
+*   **Bildirim Fabrikası (`NotificationFactory`):** Abonenin seçtiği çoklu kanallara (`EMAIL`, `SMS`, `PUSH`) göre somut bildirim sınıflarını (`EmailNotification`, `SMSNotification`, `PushNotification`) dinamik olarak üretir.
+*   **Duyuru Fabrikası (`AnnouncementFactory`):** Duyuru tiplerine (`EXAM`, `EVENT`, `HOMEWORK`, `GRADE_ENTRY`) göre somut duyuru nesnelerini oluşturur.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 3. 🔵 Tekil Nesne Deseni (Singleton Pattern)
+*   **Sistem Günlüğü (`Logger`):** Altyapı katmanında (Infrastructure) yer alan ve projenin her yerinde tek bir nesne örneği üzerinden çalışan `Logger` sınıfıdır. Sistemdeki tüm üretim, abonelik iptali ve uyarı işlemlerini merkezi olarak terminal paneline kaydeder.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📁 Klasör Yapısı (Clean Architecture)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Proje, Clean Architecture katmanlı mimarisine uygun şekilde organize edilmiştir:
+
+```text
+src/
+├── domain/                  # 1. DOMAIN KATMANI (Temel İş Kuralları & Arayüzler)
+│   ├── interfaces.ts        # IAnnouncement, IObserver, ISubject, INotification tanımları
+│   ├── Users.ts             # Student ve Teacher somut sınıfları (Observers)
+│   └── AnnouncementPublisher.ts # Duyuru dağıtıcı/yayıncı çekirdeği (Subject)
+│
+├── application/             # 2. APPLICATION KATMANI (Uygulama Mantığı & Servisler)
+│   ├── Announcements.ts     # Somut Duyuru Sınıfları (Exam, Event, Homework, GradeEntry)
+│   ├── AnnouncementFactory.ts # Duyuru üretim fabrikası
+│   ├── Notifications.ts     # Somut Bildirim Sınıfları (Email, SMS, Push)
+│   ├── NotificationFactory.ts # Çoklu kanal bildirim üretim fabrikası
+│   └── DeadlineNotifier.ts  # Tarih bazlı son 2 gün simülasyon/uyarı servisi
+│
+├── infrastructure/          # 3. INFRASTRUCTURE KATMANI (Altyapı & Ortak Araçlar)
+│   └── Logger.ts            # Singleton Logger (Sistem Günlüğü)
+│
+└── presentation/            # 4. PRESENTATION KATMANI (React / UI)
+    ├── App.tsx              # Router, Çok Sayfalı Formlar ve Simülasyon Arayüzü
+    ├── App.css              # Premium Glassmorphic HSL Tema CSS kuralları
+    └── index.css            # Temel CSS Değişkenleri ve Sıfırlama
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ✨ Öne Çıkan Benzersiz Özellikler
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1.  **Çok Kanallı Bildirim Tercihi:** Bir kullanıcı artık tek bir kanal yerine aynı anda birden fazla bildirim kanalı seçebilir (Örneğin: Ayşe Yılmaz hem 📧 E-Posta hem de 💬 SMS alabilir).
+2.  **Hedef Kitleye Göre Filtreleme:** Sistem, kimin öğrenci kimin öğretmen olduğunu bilmeden sadece roller (`role`) üzerinden akıllıca eşleşme yapar.
+3.  **Tarih Kontrolü (Deadline Simülasyonu):** Tarih içeren duyurularda **"Tarihleri Kontrol Et"** butonuna basıldığında; bitiş sürelerine 2 gün kalan tüm duyurular taranır ve doğru hedef kitleye özel bildirimler tetiklenir.
+4.  **Canlı Sistem Logları (Singleton Terminal):** Uygulama arayüzünün en altında, tüm tasarım desenlerinin çalışma sırasındaki tetiklenmelerini, fabrika üretim süreçlerini ve Singleton hareketlerini anlık olarak izleyebileceğiniz görsel bir terminal bulunur.
+
+---
+
+## 🚀 Kurulum ve Çalıştırma
+
+### 1. Yerelde Çalıştırma (Development)
+Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları sırasıyla uygulayın:
+
+```bash
+# Proje dizinine gidin
+cd akilli-kampus
+
+# Bağımlılıkları kurun
+npm install
+
+# Yerel sunucuyu başlatın
+npm run dev
 ```
+
+> [!IMPORTANT]
+> Proje yönlendirme yapısı (React Router `basename`) nedeniyle, tarayıcınızda yerel sunucuyu açtıktan sonra şu adrese gitmeniz gerekmektedir:
+> **[http://localhost:5173/akilli-kampus/](http://localhost:5173/akilli-kampus/)**
+
+### 2. Üretim Modunda Derleme (Build)
+Uygulamayı üretime hazırlamak ve derlemek için:
+
+```bash
+npm run build
+```
+
+---
+
+## 🌐 Canlıya Alma (GitHub Pages Deployment)
+
+Proje, GitHub Pages dağıtımına tamamen uyumlu hale getirilmiştir. Değişikliklerinizi kendi GitHub Pages sayfanızda yayınlamak için aşağıdaki komutu çalıştırmanız yeterlidir:
+
+```bash
+npm run deploy
+```
+
+Bu komut otomatik olarak:
+1.  Projeyi `predeploy` betiğiyle hatasız bir şekilde derler.
+2.  Oluşan `dist` klasörünü GitHub deponuzun `gh-pages` dalına yükler ve canlıya alır.
+
+---
+
+## 👤 Geliştirici
+*   **Zeynep Nur Dirik** - *Yazılım Geliştirici & Mimar*
+*   GitHub: [@ZeynepNurDirik](https://github.com/ZeynepNurDirik)
+
+Bu proje yazılım mimarisi eğitimleri ve tasarım desenlerinin modern web teknolojilerindeki pratik uygulamaları için bir referans olarak hazırlanmıştır. Keyifli kodlamalar! 🎓
