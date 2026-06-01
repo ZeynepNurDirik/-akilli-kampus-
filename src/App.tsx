@@ -598,7 +598,7 @@ function App() {
   };
 
   return (
-    <Router basename="/akilli-kampus">
+    <Router basename="/-akilli-kampus-">
       <div className="app-wrapper">
         {/* Modern Navbar */}
         <nav className="navbar">
