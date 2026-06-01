@@ -5,18 +5,11 @@ import type { IAnnouncement } from '../domain/interfaces';
  * IAnnouncement arayüzünü uygular.
  */
 export class ExamAnnouncement implements IAnnouncement {
-  // Duyuru tipini 'EXAM' olarak sabitliyoruz
   public readonly type: string = 'EXAM';
-  
-  // erasableSyntaxOnly kuralı nedeniyle property'leri açıkça tanımlıyoruz
   public title: string;
   public message: string;
+  public targetDate?: string;
 
-  /**
-   * ExamAnnouncement constructor.
-   * @param title Sınav duyurusunun başlığı
-   * @param message Sınav duyurusunun içeriği
-   */
   constructor(title: string, message: string) {
     this.title = title;
     this.message = message;
@@ -28,18 +21,43 @@ export class ExamAnnouncement implements IAnnouncement {
  * IAnnouncement arayüzünü uygular.
  */
 export class EventAnnouncement implements IAnnouncement {
-  // Duyuru tipini 'EVENT' olarak sabitliyoruz
   public readonly type: string = 'EVENT';
-  
-  // erasableSyntaxOnly kuralı nedeniyle property'leri açıkça tanımlıyoruz
   public title: string;
   public message: string;
+  public targetDate?: string;
 
-  /**
-   * EventAnnouncement constructor.
-   * @param title Etkinlik duyurusunun başlığı
-   * @param message Etkinlik duyurusunun içeriği
-   */
+  constructor(title: string, message: string) {
+    this.title = title;
+    this.message = message;
+  }
+}
+
+/**
+ * Ödev teslim uyarısı duyurularını temsil eden somut duyuru sınıfı.
+ * IAnnouncement arayüzünü uygular.
+ */
+export class HomeworkAnnouncement implements IAnnouncement {
+  public readonly type: string = 'HOMEWORK';
+  public title: string;
+  public message: string;
+  public targetDate?: string;
+
+  constructor(title: string, message: string) {
+    this.title = title;
+    this.message = message;
+  }
+}
+
+/**
+ * Not giriş hatırlatma duyurularını temsil eden somut duyuru sınıfı.
+ * IAnnouncement arayüzünü uygular.
+ */
+export class GradeEntryAnnouncement implements IAnnouncement {
+  public readonly type: string = 'GRADE_ENTRY';
+  public title: string;
+  public message: string;
+  public targetDate?: string;
+
   constructor(title: string, message: string) {
     this.title = title;
     this.message = message;

@@ -3,7 +3,7 @@ import type { IAnnouncement, IObserver, ISubject } from './interfaces';
 /**
  * AnnouncementPublisher sınıfı, ISubject arayüzünü uygulayarak
  * gözlemci (Observer) örüntüsündeki "Subject" (Özne) rolünü üstlenir.
- * Kampüsteki duyuruları yönetir ve kayıtlı gözlemcilere bildirir.
+ * Kampüsteki duyuruları yönetir ve kayıtlı gözlemcilere filtreleyerek bildirir.
  */
 export class AnnouncementPublisher implements ISubject {
   // Kayıtlı gözlemcileri (IObserver) saklayan özel dizi
@@ -33,15 +33,23 @@ export class AnnouncementPublisher implements ISubject {
   }
 
   /**
-   * Yayınlanan yeni duyuruyu kayıtlı olan tüm gözlemcilere bildirir.
-   * Her bir gözlemcinin update metodu döngü (loop) ile tetiklenir.
+   * Yayınlanan yeni duyuruyu hedef kitlesine göre filtreleyerek gözlemcilere bildirir.
+   * Hedef kitlesi uyan gözlemcilerin update metodu döngü (loop) ile tetiklenir.
    * @param announcement Yayınlanan duyuru nesnesi
    */
   notify(announcement: IAnnouncement): void {
     // Tüm kayıtlı gözlemcileri döngüyle dönüyoruz
     for (const observer of this.observers) {
-      // Her gözlemcinin update metodunu tetikleyerek duyuruyu iletiyoruz
-      observer.update(announcement);
+      // Hedef kitle filtresi kontrolü:
+      // Eğer duyurunun hedef kitlesi 'ALL' ise (veya boş/tanımsız ise) HERKESE gönder,
+      // Aksi takdirde, duyurunun hedef kitlesi (targetAudience) ile gözlemcinin rolü (role) eşleşiyorsa gönder.
+      const isTargetAll = !announcement.targetAudience || announcement.targetAudience === 'ALL';
+      const isTargetMatch = announcement.targetAudience === observer.role;
+
+      if (isTargetAll || isTargetMatch) {
+        // Hedef kitle uyuşuyorsa gözlemcinin update metodunu tetikleyerek duyuruyu iletiyoruz
+        observer.update(announcement);
+      }
     }
   }
 }

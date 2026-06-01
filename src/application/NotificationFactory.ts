@@ -28,4 +28,29 @@ export class NotificationFactory {
         throw new Error(`Desteklenmeyen bildirim tipi: ${type}`);
     }
   }
+
+  /**
+   * Çoklu bildirim gönderimi için kolaylaştırıcı statik yardımcı metot.
+   * Kullanıcının tüm tercih ettiği kanallar üzerinden döngüye girerek bildirim gönderir.
+   * Her bir bildirim Singleton Logger ile loglanır.
+   * @param types Bildirim kanalları dizisi ('EMAIL' | 'SMS' | 'PUSH')[]
+   * @param message Gönderilecek olan mesaj içeriği
+   * @param to Alıcı ismi/iletişim bilgisi
+   */
+  public static sendMultipleNotifications(
+    types: ('EMAIL' | 'SMS' | 'PUSH')[],
+    message: string,
+    to: string
+  ): void {
+    if (!types || types.length === 0) {
+      Logger.getInstance().log(`[Uyarı] "${to}" için tanımlı herhangi bir bildirim kanalı seçilmemiş!`);
+      return;
+    }
+    
+    // Her bir kanal için döngüye girip bildirim üretiyor ve gönderiyoruz
+    types.forEach((type) => {
+      const notificationService = this.createNotification(type);
+      notificationService.send(message, to);
+    });
+  }
 }

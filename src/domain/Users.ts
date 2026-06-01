@@ -7,16 +7,17 @@ import type { IAnnouncement, IObserver } from './interfaces';
 export class Student implements IObserver {
   // erasableSyntaxOnly kuralı nedeniyle property'leri açıkça tanımlıyoruz
   public name: string;
-  public notificationType: 'EMAIL' | 'SMS' | 'PUSH';
+  public role: 'STUDENT' = 'STUDENT'; // Rol otomatik olarak 'STUDENT' olarak atanır
+  public notificationTypes: ('EMAIL' | 'SMS' | 'PUSH')[];
 
   /**
    * Student constructor.
    * @param name Öğrencinin adı
-   * @param notificationType Tercih edilen bildirim kanalı ('EMAIL' | 'SMS' | 'PUSH')
+   * @param notificationTypes Tercih edilen bildirim kanalları ('EMAIL' | 'SMS' | 'PUSH') dizisi
    */
-  constructor(name: string, notificationType: 'EMAIL' | 'SMS' | 'PUSH') {
+  constructor(name: string, notificationTypes: ('EMAIL' | 'SMS' | 'PUSH')[]) {
     this.name = name;
-    this.notificationType = notificationType;
+    this.notificationTypes = notificationTypes;
   }
 
   /**
@@ -35,16 +36,17 @@ export class Student implements IObserver {
 export class Teacher implements IObserver {
   // erasableSyntaxOnly kuralı nedeniyle property'leri açıkça tanımlıyoruz
   public name: string;
-  public notificationType: 'EMAIL' | 'SMS' | 'PUSH';
+  public role: 'TEACHER' = 'TEACHER'; // Rol otomatik olarak 'TEACHER' olarak atanır
+  public notificationTypes: ('EMAIL' | 'SMS' | 'PUSH')[];
 
   /**
    * Teacher constructor.
    * @param name Öğretmenin adı
-   * @param notificationType Tercih edilen bildirim kanalı ('EMAIL' | 'SMS' | 'PUSH')
+   * @param notificationTypes Tercih edilen bildirim kanalları ('EMAIL' | 'SMS' | 'PUSH') dizisi
    */
-  constructor(name: string, notificationType: 'EMAIL' | 'SMS' | 'PUSH') {
+  constructor(name: string, notificationTypes: ('EMAIL' | 'SMS' | 'PUSH')[]) {
     this.name = name;
-    this.notificationType = notificationType;
+    this.notificationTypes = notificationTypes;
   }
 
   /**
